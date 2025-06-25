@@ -128,10 +128,6 @@ std::list<T> PmergeMe::fordJohnsonList(std::list<T> &arr) {
                     tmpResult.begin(), end, val, ListCompare<T>());
                 tmpResult.insert(pos, val);
             }
-			for (size_t i = 0; i < tmpResult.size(); i++) {
-				std::cout << tmpResult[i] << " ";
-			}
-			std::cout << std::endl;
             processedCount = nextIndex + 1;
             if (processedCount >= losersVec.size() - 1) {
                 break;

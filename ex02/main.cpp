@@ -116,7 +116,7 @@ int main(int argc, char **argv) {
         std::cout << std::endl;
 
 		std::cout << "corrent sorted: ";
-		for (size_t i = 1; i < originalVec.size(); ++i) {
+		for (size_t i = 1; i < originalVec.size() + 1; ++i) {
 			std::cout << i << " ";
 		}
 		std::cout << std::endl;
