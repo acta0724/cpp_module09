@@ -106,13 +106,13 @@ int main(int argc, char **argv) {
         size_t listComparisons = PmergeMe::getListComparisonCount();
         
         // 結果を表示
-        std::cout << "After vector: ";
+        std::cout << "After vector:   ";
         for (size_t i = 0; i < sortedVec.size(); ++i) {
             std::cout << sortedVec[i] << " ";
         }
-        if (sortedVec.size() > 10) {
-            std::cout << "[...]";
-        }
+        // if (sortedVec.size() > 10) {
+        //     std::cout << "[...]";
+        // }
         std::cout << std::endl;
 
 		std::cout << "corrent sorted: ";
