@@ -103,15 +103,9 @@ std::list<T> PmergeMe::fordJohnsonList(std::list<T> &arr) {
 			losersVec.push_back(losers.back());
 		}
         std::vector<T> tmpResult(result.begin(), result.end());
-		if (!losersVec.empty() && !winners.empty()) {
-			Node<T>* firstWinner = winners.front();
-			Node<T>* firstLoser = firstWinner->getPair();
-			T val = firstLoser->get();
-			tmpResult.insert(tmpResult.begin(), val);
-		}
-        size_t processedCount = 1; 
-        for (size_t n = 1; ; ++n) {
-			size_t jn = nextJacobsthal(n);
+        size_t processedCount = 0;
+        for (size_t n = 0; ; ++n) {
+			size_t jn = 2 * nextJacobsthal(n);
 			size_t nextIndex = processedCount + jn;
 			if (nextIndex >= losersVec.size()) {
 				nextIndex = losersVec.size() - 1;
@@ -124,10 +118,26 @@ std::list<T> PmergeMe::fordJohnsonList(std::list<T> &arr) {
                 Node<T>* loser = tmpLosers[i];
                 T val = loser->get();
                 typename std::vector<T>::iterator end = tmpResult.end() -1;
-                typename std::vector<T>::iterator pos = std::lower_bound(
-                    tmpResult.begin(), end, val, ListCompare<T>());
+                // Custom binary search implementation instead of std::lower_bound
+                typename std::vector<T>::iterator start = tmpResult.begin();
+                typename std::vector<T>::iterator last = end;
+                typename std::vector<T>::iterator pos;
+                ListCompare<T> comp;
+                
+                while (start < last) {
+                    typename std::vector<T>::iterator mid = start + (last - start) / 2;
+                    if (comp(*mid, val)) {
+                        // If mid element is less than val, search in right half
+                        start = mid + 1;
+                    } else {
+                        // If mid element is greater or equal to val, search in left half
+                        last = mid;
+                    }
+                }
+                pos = start;
                 tmpResult.insert(pos, val);
             }
+			std::cout << "g_listComparisonCount: " << g_listComparisonCount << std::endl;
             processedCount = nextIndex + 1;
             if (processedCount >= losersVec.size() - 1) {
                 break;
