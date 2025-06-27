@@ -79,6 +79,12 @@ private:
 
 	static size_t nextJacobsthal(size_t n);
 
+	template <typename T>
+	static void createPairsVec(std::vector<Node<T>*>& nodes, std::vector<Node<T>*>& winners, Node<T>*& oddElement, bool& hasOdd);
+
+	template <typename T>
+	static void createPairsList(std::list<Node<T>*>& nodes, std::list<Node<T>*>& winners, Node<T>*& oddElement, bool& hasOdd);
+
 public:
 	static void resetComparisonCounts();
 	static size_t getVecComparisonCount();
