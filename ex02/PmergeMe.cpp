@@ -37,7 +37,6 @@ PmergeMe &PmergeMe::operator=(const PmergeMe &src) {
 
 PmergeMe::~PmergeMe() {}
 
-// Optimized binary search with comparison counting
 template<typename Iterator, typename T>
 Iterator optimizedLowerBound(Iterator first, Iterator last, const T& val, size_t& compCount) {
     while (first != last) {
@@ -62,12 +61,10 @@ std::vector<T> PmergeMe::fordJohnsonVec(std::vector<T>& arr) {
     bool hasOdd = false;
     Node<T>* oddElement = nullptr;
     
-    // Create nodes
     for (size_t i = 0; i < arr.size(); ++i) {
         nodes.push_back(new Node<T>(&arr[i]));
     }
     
-    // Phase 1: Pairing and comparison
     for (size_t i = 0; i < nodes.size(); i += 2) {
         if (i + 1 < nodes.size()) {
             Node<T>* first = nodes[i];
@@ -81,13 +78,11 @@ std::vector<T> PmergeMe::fordJohnsonVec(std::vector<T>& arr) {
                 second->setPair(first);
             }
         } else {
-            // Odd element
             hasOdd = true;
             oddElement = nodes[i];
         }
     }
     
-    // Phase 2: Recursively sort winners
     if (winners.size() > 1) {
         std::vector<T> tempVec;
         for (size_t i = 0; i < winners.size(); ++i) {
@@ -96,7 +91,6 @@ std::vector<T> PmergeMe::fordJohnsonVec(std::vector<T>& arr) {
         
         std::vector<T> sortedVec = fordJohnsonVec(tempVec);
         
-        // Reconstruct winners based on sorted order
         std::vector<Node<T>*> newWinners;
         for (size_t i = 0; i < sortedVec.size(); ++i) {
             for (size_t j = 0; j < winners.size(); ++j) {
@@ -109,22 +103,17 @@ std::vector<T> PmergeMe::fordJohnsonVec(std::vector<T>& arr) {
         winners = newWinners;
     }
     
-    // Phase 3: Initialize result with first loser and all winners
     std::vector<T> result;
     
-    // Add first loser (if exists)
     if (!winners.empty() && winners[0]->hasPair()) {
         result.push_back(winners[0]->getPair()->get());
     }
     
-    // Add all winners
     for (size_t i = 0; i < winners.size(); ++i) {
         result.push_back(winners[i]->get());
     }
     
-    // Phase 4: Insert remaining losers using Jacobsthal sequence
     if (winners.size() > 1) {
-        // Create list of remaining losers (excluding the first one already inserted)
         std::vector<Node<T>*> remainingLosers;
         for (size_t i = 1; i < winners.size(); ++i) {
             if (winners[i]->hasPair()) {
@@ -132,31 +121,22 @@ std::vector<T> PmergeMe::fordJohnsonVec(std::vector<T>& arr) {
             }
         }
         
-        // Add odd element if exists
         if (hasOdd) {
             remainingLosers.push_back(oddElement);
         }
         
-        // Insert using Jacobsthal sequence
         size_t insertedCount = 0;
         
         for (size_t k = 1; insertedCount < remainingLosers.size(); ++k) {
             size_t jacobsthalK = nextJacobsthal(k);
             
-            // Calculate range to insert
             size_t start = insertedCount;
             size_t end = std::min(jacobsthalK - 1, remainingLosers.size() - 1);
             
-            // Insert elements in reverse order within this range
             for (size_t idx = end; idx != SIZE_MAX && idx >= start; --idx) {
                 if (idx < remainingLosers.size()) {
                     T val = remainingLosers[idx]->get();
-                    std::cout << "val: " << val << std::endl;
-                    // Find insertion position with optimized binary search
-                    // Limit search range based on the position of the paired winner
                     typename std::vector<T>::iterator searchEnd = result.end();
-                    
-                    // Find the paired winner's position to limit search range
                     Node<T>* pairedWinner = nullptr;
                     for (size_t w = 0; w < winners.size(); ++w) {
                         if (winners[w]->getPair() == remainingLosers[idx]) {
@@ -166,7 +146,6 @@ std::vector<T> PmergeMe::fordJohnsonVec(std::vector<T>& arr) {
                     }
                     
                     if (pairedWinner) {
-                        // Limit search to before the paired winner
                         for (typename std::vector<T>::iterator it = result.begin(); it != result.end(); ++it) {
                             if (*it == pairedWinner->get()) {
                                 searchEnd = it;
@@ -180,19 +159,15 @@ std::vector<T> PmergeMe::fordJohnsonVec(std::vector<T>& arr) {
                     result.insert(pos, val);
                 }
             }
-            std::cout << "g_vecComparisonCount: " << g_vecComparisonCount << std::endl;
             insertedCount = end + 1;
         }
     } else if (hasOdd) {
-        // Handle odd element when there's only one winner
         T val = oddElement->get();
         typename std::vector<T>::iterator pos = optimizedLowerBound(
             result.begin(), result.end(), val, g_vecComparisonCount);
         result.insert(pos, val);
-        std::cout << "g_vecComparisonCount: " << g_vecComparisonCount << std::endl;
     }
     
-    // Clean up
     for (size_t i = 0; i < nodes.size(); ++i) {
         delete nodes[i];
     }
@@ -211,12 +186,10 @@ std::list<T> PmergeMe::fordJohnsonList(std::list<T> &arr) {
     bool hasOdd = false;
     Node<T>* oddElement = nullptr;
     
-    // Create nodes
     for (typename std::list<T>::iterator it = arr.begin(); it != arr.end(); ++it) {
         nodes.push_back(new Node<T>(&(*it)));
     }
     
-    // Phase 1: Pairing
     for (size_t i = 0; i < nodes.size(); i += 2) {
         if (i + 1 < nodes.size()) {
             Node<T>* first = nodes[i];
@@ -235,7 +208,6 @@ std::list<T> PmergeMe::fordJohnsonList(std::list<T> &arr) {
         }
     }
     
-    // Phase 2: Recursively sort winners
     if (winners.size() > 1) {
         std::list<T> tempList;
         for (size_t i = 0; i < winners.size(); ++i) {
@@ -256,20 +228,16 @@ std::list<T> PmergeMe::fordJohnsonList(std::list<T> &arr) {
         winners = newWinners;
     }
     
-    // Phase 3: Initialize result
     std::list<T> result;
     
-    // Add first loser
     if (!winners.empty() && winners[0]->hasPair()) {
         result.push_back(winners[0]->getPair()->get());
     }
     
-    // Add all winners
     for (size_t i = 0; i < winners.size(); ++i) {
         result.push_back(winners[i]->get());
     }
     
-    // Phase 4: Insert remaining losers
     if (winners.size() > 1) {
         std::vector<Node<T>*> remainingLosers;
         for (size_t i = 1; i < winners.size(); ++i) {
@@ -285,7 +253,7 @@ std::list<T> PmergeMe::fordJohnsonList(std::list<T> &arr) {
         std::vector<T> tmpResult(result.begin(), result.end());
         size_t insertedCount = 0;
         
-        for (size_t k = 2; insertedCount < remainingLosers.size(); ++k) {
+        for (size_t k = 1; insertedCount < remainingLosers.size(); ++k) {
             size_t jacobsthalK = nextJacobsthal(k);
             
             size_t start = insertedCount;
@@ -295,8 +263,26 @@ std::list<T> PmergeMe::fordJohnsonList(std::list<T> &arr) {
                 if (idx < remainingLosers.size()) {
                     T val = remainingLosers[idx]->get();
                     
+                    typename std::vector<T>::iterator searchEnd = tmpResult.end();
+                    Node<T>* pairedWinner = nullptr;
+                    for (size_t w = 0; w < winners.size(); ++w) {
+                        if (winners[w]->getPair() == remainingLosers[idx]) {
+                            pairedWinner = winners[w];
+                            break;
+                        }
+                    }
+                    
+                    if (pairedWinner) {
+                        for (typename std::vector<T>::iterator it = tmpResult.begin(); it != tmpResult.end(); ++it) {
+                            if (*it == pairedWinner->get()) {
+                                searchEnd = it;
+                                break;
+                            }
+                        }
+                    }
+                    
                     typename std::vector<T>::iterator pos = optimizedLowerBound(
-                        tmpResult.begin(), tmpResult.end(), val, g_listComparisonCount);
+                        tmpResult.begin(), searchEnd, val, g_listComparisonCount);
                     tmpResult.insert(pos, val);
                 }
             }
@@ -315,16 +301,12 @@ std::list<T> PmergeMe::fordJohnsonList(std::list<T> &arr) {
         result.clear();
         result.insert(result.begin(), tmpResult.begin(), tmpResult.end());
     }
-    
-    // Clean up
     for (size_t i = 0; i < nodes.size(); ++i) {
         delete nodes[i];
     }
-    
     return result;
 }
 
-// Explicit template instantiation
 template std::vector<int> PmergeMe::fordJohnsonVec(std::vector<int>& arr);
 template std::list<int> PmergeMe::fordJohnsonList(std::list<int>& lst);
 
