@@ -8,7 +8,7 @@ RANDOM_NUMBERS=""
 for i in {1..21}
 do
   # 1から1000までのランダムな整数を生成
-  NUM=$((RANDOM % 1000 + 1))
+  NUM=$((RANDOM % 10000 + 1))
   RANDOM_NUMBERS="$RANDOM_NUMBERS $NUM"
 done
 

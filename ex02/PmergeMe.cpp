@@ -140,7 +140,7 @@ std::vector<T> PmergeMe::fordJohnsonVec(std::vector<T>& arr) {
         // Insert using Jacobsthal sequence
         size_t insertedCount = 0;
         
-        for (size_t k = 2; insertedCount < remainingLosers.size(); ++k) {
+        for (size_t k = 1; insertedCount < remainingLosers.size(); ++k) {
             size_t jacobsthalK = nextJacobsthal(k);
             
             // Calculate range to insert
@@ -151,7 +151,7 @@ std::vector<T> PmergeMe::fordJohnsonVec(std::vector<T>& arr) {
             for (size_t idx = end; idx != SIZE_MAX && idx >= start; --idx) {
                 if (idx < remainingLosers.size()) {
                     T val = remainingLosers[idx]->get();
-                    
+                    std::cout << "val: " << val << std::endl;
                     // Find insertion position with optimized binary search
                     // Limit search range based on the position of the paired winner
                     typename std::vector<T>::iterator searchEnd = result.end();
@@ -180,7 +180,7 @@ std::vector<T> PmergeMe::fordJohnsonVec(std::vector<T>& arr) {
                     result.insert(pos, val);
                 }
             }
-            
+            std::cout << "g_vecComparisonCount: " << g_vecComparisonCount << std::endl;
             insertedCount = end + 1;
         }
     } else if (hasOdd) {
@@ -189,6 +189,7 @@ std::vector<T> PmergeMe::fordJohnsonVec(std::vector<T>& arr) {
         typename std::vector<T>::iterator pos = optimizedLowerBound(
             result.begin(), result.end(), val, g_vecComparisonCount);
         result.insert(pos, val);
+        std::cout << "g_vecComparisonCount: " << g_vecComparisonCount << std::endl;
     }
     
     // Clean up
@@ -329,10 +330,10 @@ template std::list<int> PmergeMe::fordJohnsonList(std::list<int>& lst);
 
 size_t PmergeMe::nextJacobsthal(size_t n) {
     if (n == 0) return 0;
-    if (n == 1) return 1;
+    if (n == 1) return 2;
     
-    size_t a = 0;
-    size_t b = 1;
+    size_t a = 2;
+    size_t b = 0;
     size_t result = 0;
     
     for (size_t i = 2; i <= n; ++i) {
