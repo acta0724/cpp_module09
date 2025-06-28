@@ -22,7 +22,8 @@ bool RPN::evaluate(const std::string &expression, int &result) {
 	std::stack<int> stack;
 	std::istringstream iss(expression);
 	std::string token;
-	int a, b;
+	int a;
+	int b;
 
 	while (iss >> token) {
 		if (token.size() == 1 && std::isdigit(token[0])) {

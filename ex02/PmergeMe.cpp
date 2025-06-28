@@ -158,9 +158,11 @@ void PmergeMe::createPairsVec(std::vector<Node<T>*>& nodes, std::vector<Node<T>*
             if (first->get() > second->get()) {
                 winners.push_back(first);
                 first->setPair(second);
+				second->setPair(first);
             } else {
                 winners.push_back(second);
                 second->setPair(first);
+				first->setPair(second);
             }
         } else {
             hasOdd = true;
@@ -183,9 +185,11 @@ void PmergeMe::createPairsList(std::list<Node<T>*>& nodes, std::list<Node<T>*>& 
             if (first->get() > second->get()) {
                 winners.push_back(first);
                 first->setPair(second);
+				second->setPair(first);
             } else {
                 winners.push_back(second);
                 second->setPair(first);
+				first->setPair(second);
             }
         } else {
             hasOdd = true;

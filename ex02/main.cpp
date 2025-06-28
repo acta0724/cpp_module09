@@ -15,7 +15,7 @@
 unsigned long getTimeInMicroseconds() {
     struct timeval tv;
     gettimeofday(&tv, NULL);
-    return tv.tv_sec * 1000000 + tv.tv_usec;
+    return (tv.tv_sec * 1000000 + tv.tv_usec);
 }
 
 bool isPositiveInteger(const std::string& str) {
@@ -33,7 +33,7 @@ bool isPositiveInteger(const std::string& str) {
 bool stringToInt(const std::string& str, int& value) {
     std::istringstream iss(str);
     iss >> value;
-    return !iss.fail() && iss.eof() && value >= 0;
+    return (!iss.fail() && iss.eof() && value >= 0);
 }
 
 int main(int argc, char **argv) {
@@ -75,7 +75,7 @@ int main(int argc, char **argv) {
             return EXIT_FAILURE;
         }
         
-        std::cout << "Before vector: ";
+        std::cout << "Before: ";
         for (size_t i = 0; i < vec.size() && i < 10; ++i) {
             std::cout << vec[i] << " ";
         }
@@ -96,30 +96,11 @@ int main(int argc, char **argv) {
         unsigned long listTime = endList - startList;
         size_t listComparisons = PmergeMe::getListComparisonCount();
         
-        std::cout << "After vector:   ";
-        for (size_t i = 0; i < sortedVec.size(); ++i) {
+        std::cout << "After:  ";
+        for (size_t i = 0; i < sortedVec.size() && i < 10; ++i) {
             std::cout << sortedVec[i] << " ";
         }
         if (sortedVec.size() > 10) {
-            std::cout << "[...]";
-        }
-        std::cout << std::endl;
-
-		std::cout << "corrent sorted: ";
-		for (size_t i = 1; i < vec.size() + 1; ++i) {
-			std::cout << i << " ";
-		}
-		std::cout << std::endl;
-
-		std::cout << "After list:     ";
-        std::list<int>::iterator it = sortedList.begin();
-        for (size_t i = 0; i < sortedList.size(); ++i) {
-            if (it != sortedList.end()) {
-                std::cout << *it << " ";
-                ++it;
-            }
-        }
-        if (sortedList.size() > 10) {
             std::cout << "[...]";
         }
         std::cout << std::endl;
@@ -129,8 +110,6 @@ int main(int argc, char **argv) {
         if (!isSortedVec || !isSortedList) {
             std::cerr << "Error: sorting failed." << std::endl;
             return EXIT_FAILURE;
-        } else {
-            std::cout << "Sorting completed successfully." << std::endl;
         }
         
         std::cout << "Time to process a range of " 
@@ -150,9 +129,6 @@ int main(int argc, char **argv) {
         return EXIT_SUCCESS;
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
-        return EXIT_FAILURE;
-    } catch (...) {
-        std::cerr << "Error: unknown error occurred." << std::endl;
         return EXIT_FAILURE;
     }
 }

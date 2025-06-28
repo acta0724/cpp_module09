@@ -5,7 +5,6 @@
 #include <cstdlib>
 #include <limits>
 
-// 文字列の前後の空白を削除する関数
 std::string trim(const std::string& s) {
     size_t start = s.find_first_not_of(" \t\r\n");
     size_t end = s.find_last_not_of(" \t\r\n");
@@ -15,14 +14,14 @@ std::string trim(const std::string& s) {
 int main(int argc, char **argv) {
 	if (argc != 2) {
 		std::cerr << "Error: invalid number of arguments." << std::endl;
-		return 1;
+		return EXIT_FAILURE;
 	}
 	BitcoinExchange exchange;
 	exchange.loadData("data.csv");
 	std::ifstream file(argv[1]);
 	if (!file.is_open()) {
 		std::cerr << "Error: could not open file." << std::endl;
-		return 1;
+		return EXIT_FAILURE;
 	}
 	std::string line;
 	std::getline(file, line);
@@ -52,5 +51,5 @@ int main(int argc, char **argv) {
 			std::cerr << "Error: bad input => " << line << std::endl;
 		}
 	}
-	return 0;
+	return EXIT_SUCCESS;
 }
