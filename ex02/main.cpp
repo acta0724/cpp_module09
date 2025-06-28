@@ -2,89 +2,133 @@
 #include <iostream>
 #include <vector>
 #include <list>
-#include <cstdlib>
-#include <ctime>
 #include <sstream>
 #include <string>
-#include <climits>
+#include <cstdlib>
+#include <algorithm>
+#include <ctime>
+#include <limits>
 #include <cerrno>
 #include <iomanip>
+#include <sys/time.h>
+
+unsigned long getTimeInMicroseconds() {
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return (tv.tv_sec * 1000000 + tv.tv_usec);
+}
 
 bool isPositiveInteger(const std::string& str) {
     if (str.empty()) 
 		return false;
+    
     for (size_t i = 0; i < str.length(); ++i) {
         if (!std::isdigit(str[i])) 
 			return false;
     }
+    
     return true;
 }
 
-bool stringToInt(const std::string& str, int& result) {
-    errno = 0;
-    char* endptr;
-    long value = std::strtol(str.c_str(), &endptr, 10);
-    if (errno == ERANGE || *endptr != '\0' || str.empty() || value <= 0 || value > INT_MAX) {
-        return false;
-    }
-    result = static_cast<int>(value);
-    return true;
+bool stringToInt(const std::string& str, int& value) {
+    std::istringstream iss(str);
+    iss >> value;
+    return (!iss.fail() && iss.eof() && value >= 0);
 }
 
 int main(int argc, char **argv) {
-	std::vector<int> vec;
-    std::vector<int> originalVec;
-    std::list<int> lst;
-    std::string token;
-
-	if (argc != 2) {
-		std::cerr << "Error: invalid number of arguments." << std::endl;
-		return EXIT_FAILURE;
-    }
-    std::istringstream iss(argv[1]);
-	int value;
-    while (iss >> token) {
-        if (!isPositiveInteger(token) || !stringToInt(token, value)) {
-            std::cerr << "Error: invalid argument '" << token << "'. Only positive integers are allowed." << std::endl;
+    try {
+        if (argc < 2) {
+            std::cerr << "Error: invalid number of arguments." << std::endl;
             return EXIT_FAILURE;
         }
-        vec.push_back(value);
-        originalVec.push_back(value);
-        lst.push_back(value);
-    }
-    if (vec.empty()) {
-        std::cerr << "Error: no valid integers provided." << std::endl;
+        
+        std::vector<int> vec;
+        std::list<int> lst;
+        
+        for (int i = 1; i < argc; ++i) {
+            std::string arg = argv[i];
+            std::istringstream iss(arg);
+            std::string token;
+            
+            while (iss >> token) {
+                int value;
+                if (!isPositiveInteger(token) || !stringToInt(token, value)) {
+                    std::cerr << "Error: invalid argument '" << token << "'. Only positive integers are allowed." << std::endl;
+                    return EXIT_FAILURE;
+                }
+                
+                for (size_t j = 0; j < vec.size(); ++j) {
+                    if (vec[j] == value) {
+                        std::cerr << "Error: duplicate value '" << value << "' found. All values must be unique." << std::endl;
+                        return EXIT_FAILURE;
+                    }
+                }
+                
+                vec.push_back(value);
+                lst.push_back(value);
+            }
+        }
+        
+        if (vec.empty()) {
+            std::cerr << "Error: no valid integers specified." << std::endl;
+            return EXIT_FAILURE;
+        }
+        
+        std::cout << "Before: ";
+        for (size_t i = 0; i < vec.size() && i < 10; ++i) {
+            std::cout << vec[i] << " ";
+        }
+        if (vec.size() > 10) {
+            std::cout << "[...]";
+        }
+        std::cout << std::endl;
+        
+        unsigned long startVec = getTimeInMicroseconds();
+        std::vector<int> sortedVec = PmergeMe::fordJohnsonVec(vec);
+        unsigned long endVec = getTimeInMicroseconds();
+        unsigned long vecTime = endVec - startVec;
+        size_t vecComparisons = PmergeMe::getVecComparisonCount();
+        
+        unsigned long startList = getTimeInMicroseconds();
+        std::list<int> sortedList = PmergeMe::fordJohnsonList(lst);
+        unsigned long endList = getTimeInMicroseconds();
+        unsigned long listTime = endList - startList;
+        size_t listComparisons = PmergeMe::getListComparisonCount();
+        
+        std::cout << "After:  ";
+        for (size_t i = 0; i < sortedVec.size() && i < 10; ++i) {
+            std::cout << sortedVec[i] << " ";
+        }
+        if (sortedVec.size() > 10) {
+            std::cout << "[...]";
+        }
+        std::cout << std::endl;
+        
+        bool isSortedVec = std::is_sorted(sortedVec.begin(), sortedVec.end());
+		bool isSortedList = std::is_sorted(sortedList.begin(), sortedList.end());
+        if (!isSortedVec || !isSortedList) {
+            std::cerr << "Error: sorting failed." << std::endl;
+            return EXIT_FAILURE;
+        }
+        
+        std::cout << "Time to process a range of " 
+                  << std::setw(5) 
+                  << std::setfill(' ') << vec.size()
+                  << " elements with std::vector : "
+                  << vecTime << " us" 
+                  << "(" << vecComparisons << " comparisons)" << std::endl;
+        
+        std::cout << "Time to process a range of " 
+                  << std::setw(5) 
+                  << std::setfill(' ') << lst.size()
+                  << " elements with std::list : "
+                  << listTime << " us"
+                  << "(" << listComparisons << " comparisons)" << std::endl;
+        
+        return EXIT_SUCCESS;
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
         return EXIT_FAILURE;
     }
-    clock_t start = clock();
-    vec = PmergeMe::fordJohnsonVec(vec);
-    clock_t end = clock();
-    double time = (double)(end - start) / CLOCKS_PER_SEC * 1e6;
-    
-    std::cout << "Before: ";
-    for (size_t i = 0; i < originalVec.size() && i < 10; ++i) {
-        std::cout << originalVec[i] << " ";
-    }
-    if (originalVec.size() > 10)
-		std::cout << "[...]";
-    std::cout << std::endl;
-    
-    std::cout << "After: ";
-    for (size_t i = 0; i < vec.size() && i < 10; ++i) {
-        std::cout << vec[i] << " ";
-    }
-    if (vec.size() > 10)
-		std::cout << "[...]";
-    std::cout << std::endl;
-    
-    std::cout << "Time to process a range of " << vec.size() << " elements with std::vector : " 
-              << std::fixed << std::setprecision(5) << time / 1000000 << " us" << std::endl;
-    
-    start = clock();
-    lst = PmergeMe::fordJohnsonList(lst);
-    end = clock();
-    time = (double)(end - start) / CLOCKS_PER_SEC * 1e6;
-    std::cout << "Time to process a range of " << lst.size() << " elements with std::list : " 
-              << std::fixed << std::setprecision(5) << time / 1000000 << " us" << std::endl;
-    return EXIT_SUCCESS;
 }

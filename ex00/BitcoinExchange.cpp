@@ -33,12 +33,20 @@ bool BitcoinExchange::isValueValid(const std::string &date) const {
 			return false;
 		}
 	}
-	// int year = std::atoi(date.substr(0, 4).c_str());
-	int month = std::atoi(date.substr(5, 2).c_str());
-	int day = std::atoi(date.substr(8, 2).c_str());
-	if (month < 1 || month > 12 || day < 1 || day > 31) {
+	int year = std::stoi(date.substr(0, 4));
+	int month = std::stoi(date.substr(5, 2));
+	int day = std::stoi(date.substr(8, 2));
+	if (month < 1 || month > 12 || day < 1) {
 		return false;
 	}
+	int daysInMonth[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+	if (month == 2 && ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0))) {
+		daysInMonth[2] = 29;
+	}
+	if (day > daysInMonth[month]) {
+		return false;
+	}
+	
 	return true;
 }
 
@@ -64,28 +72,22 @@ void BitcoinExchange::loadData(const std::string &filename) {
 }
 
 bool BitcoinExchange::getPrice(const std::string &date, double &price, double amount) const {
-	// 日付の形式チェック
 	if (!isValueValid(date)) {
 		std::cerr << "Error: bad input => " << date << std::endl;
 		return false;
 	}
 
-	// 完全一致する日付を検索
 	std::map<std::string, double>::const_iterator it = _data.find(date);
 	if (it != _data.end()) {
 		price = it->second * amount;
 		return true;
 	}
 
-	// 完全一致しない場合、その日付以前の最も近い日付を検索
 	it = _data.lower_bound(date);
 	if (it == _data.begin() && it->first > date) {
-		// データベース内の最も古い日付よりも前の日付が指定された
 		return false;
 	}
 
-	// lower_boundは指定した値以上の最初の要素を返すので、
-	// 指定した日付より後の日付が返された場合は一つ前の要素を使用
 	if (it == _data.end() || it->first > date) {
 		--it;
 	}
