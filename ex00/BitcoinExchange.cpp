@@ -2,6 +2,8 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <string>
+#include <cstdlib> 
 
 BitcoinExchange::BitcoinExchange() {}
 
@@ -33,9 +35,9 @@ bool BitcoinExchange::isValueValid(const std::string &date) const {
 			return false;
 		}
 	}
-	int year = std::stoi(date.substr(0, 4));
-	int month = std::stoi(date.substr(5, 2));
-	int day = std::stoi(date.substr(8, 2));
+	int year  = std::atoi(date.substr(0,4).c_str());
+	int month = std::atoi(date.substr(5,2).c_str());
+	int day   = std::atoi(date.substr(8,2).c_str());
 	if (month < 1 || month > 12 || day < 1) {
 		return false;
 	}
