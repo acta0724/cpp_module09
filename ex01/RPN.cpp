@@ -50,6 +50,9 @@ bool RPN::evaluate(const std::string &expression, int &result) {
 				}
 				stack.push(a / b);
 			}
+		} else {
+			std::cerr << "Error: invalid expression." << std::endl;
+			return false;
 		}
 	}
 	if (stack.size() != 1) {
