@@ -2,6 +2,8 @@
 #include <algorithm>
 #include <utility>
 
+#define SIZE_MAX static_cast<size_t>(-1)
+
 size_t g_vecComparisonCount = 0;
 size_t g_listComparisonCount = 0;
 
@@ -17,8 +19,8 @@ std::vector<T> PmergeMe::fordJohnsonVec(std::vector<T>& arr) {
 	std::vector<T> result;
 	std::vector<Node<T>*> newLosers;
     bool hasOdd = false;
-    Node<T>* oddElement = nullptr;
-	Node<T>* pairedWinner = nullptr;
+    Node<T>* oddElement = NULL;
+	Node<T>* pairedWinner = NULL;
 	size_t insertedCount = 0;
 	size_t jacobsthalK = 0;
 	size_t start = 0;
@@ -82,8 +84,8 @@ std::list<T> PmergeMe::fordJohnsonList(std::list<T> &arr) {
 	std::list<T> sortedList;
 	std::list<Node<T>*> newLosers;
     bool hasOdd = false;
-    Node<T>* oddElement = nullptr;
-	Node<T>* pairedWinner = nullptr;
+    Node<T>* oddElement = NULL;
+	Node<T>* pairedWinner = NULL;
 	size_t insertedCount = 0;
 	size_t jacobsthalK = 0;
 	size_t start = 0;
@@ -148,8 +150,8 @@ template std::list<int> PmergeMe::fordJohnsonList(std::list<int>& lst);
 
 template <typename T>
 void PmergeMe::createPairsVec(std::vector<Node<T>*>& nodes, std::vector<Node<T>*>& winners, Node<T>*& oddElement, bool& hasOdd) {
-	Node<T>* first = nullptr;
-	Node<T>* second = nullptr;
+	Node<T>* first = NULL;
+	Node<T>* second = NULL;
     for (size_t i = 0; i < nodes.size(); i += 2) {
         if (i + 1 < nodes.size()) {
             first = nodes[i];
@@ -173,8 +175,8 @@ void PmergeMe::createPairsVec(std::vector<Node<T>*>& nodes, std::vector<Node<T>*
 
 template <typename T>
 void PmergeMe::createPairsList(std::list<Node<T>*>& nodes, std::list<Node<T>*>& winners, Node<T>*& oddElement, bool& hasOdd) {
-	Node<T>* first = nullptr;
-	Node<T>* second = nullptr;
+	Node<T>* first = NULL;
+	Node<T>* second = NULL;
     for (typename std::list<Node<T>*>::iterator it = nodes.begin(); it != nodes.end(); ) {
         first = *it;
         ++it;
@@ -221,7 +223,7 @@ Node<T>* PmergeMe::findPairedWinner(const std::list<Node<T>*>& winners, Node<T>*
             return *it;
         }
     }
-    return nullptr;
+    return NULL;
 }
 
 template <typename T>

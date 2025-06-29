@@ -105,13 +105,6 @@ int main(int argc, char **argv) {
         }
         std::cout << std::endl;
         
-        bool isSortedVec = std::is_sorted(sortedVec.begin(), sortedVec.end());
-		bool isSortedList = std::is_sorted(sortedList.begin(), sortedList.end());
-        if (!isSortedVec || !isSortedList) {
-            std::cerr << "Error: sorting failed." << std::endl;
-            return EXIT_FAILURE;
-        }
-        
         std::cout << "Time to process a range of " 
                   << std::setw(5) 
                   << std::setfill(' ') << vec.size()
